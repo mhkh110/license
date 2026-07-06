@@ -2,151 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XBody - License Generator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>XBody License Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-            background: #0a0a1a;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .card {
-            background: #0d1117;
-            border: 1px solid rgba(108, 92, 231, 0.3);
-            border-radius: 24px;
-            padding: 40px 32px;
-            width: 100%;
-            max-width: 500px;
-            box-shadow: 0 0 60px rgba(108, 92, 231, 0.15);
-        }
-        h1 {
-            text-align: center;
-            background: linear-gradient(135deg, #a855f7, #00ffc8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 26px;
-            margin-bottom: 8px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #8888aa;
-            font-size: 12px;
-            letter-spacing: 3px;
-            margin-bottom: 30px;
-        }
-        label {
-            color: #8888aa;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            display: block;
-            margin-bottom: 8px;
-        }
-        input, select {
-            width: 100%;
-            padding: 14px;
-            background: rgba(20, 20, 40, 0.8);
-            border: 2px solid rgba(108, 92, 231, 0.3);
-            border-radius: 14px;
-            color: white;
-            font-size: 18px;
-            font-family: 'Consolas', 'Space Grotesk', monospace;
-            letter-spacing: 3px;
-            outline: none;
-            margin-bottom: 20px;
-        }
-        input:focus, select:focus {
-            border-color: #a855f7;
-            box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
-        }
-        select {
-            font-family: 'Space Grotesk', sans-serif;
-            letter-spacing: 1px;
-        }
-        select option {
-            background: #0d1117;
-        }
-        button {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #6c5ce7, #a855f7);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            font-size: 17px;
-            font-weight: 700;
-            cursor: pointer;
-            letter-spacing: 1px;
-        }
-        button:hover {
-            background: linear-gradient(135deg, #7c6cf7, #b865ff);
-        }
-        .result {
-            margin-top: 24px;
-            padding: 20px;
-            background: rgba(0,0,0,0.3);
-            border: 2px dashed rgba(0, 255, 200, 0.4);
-            border-radius: 16px;
-            display: none;
-            text-align: center;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background: #0a0a1a; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .card { background: #0d1117; border: 1px solid #6c5ce7; border-radius: 20px; padding: 40px; width: 100%; max-width: 500px; }
+        h1 { color: #a855f7; text-align: center; margin-bottom: 30px; }
+        label { color: #888; font-size: 12px; font-weight: bold; letter-spacing: 2px; display: block; margin-bottom: 8px; }
+        input, select { width: 100%; padding: 14px; background: #1a1a2e; border: 2px solid #333; border-radius: 12px; color: #fff; font-size: 18px; font-family: 'Consolas', monospace; letter-spacing: 3px; margin-bottom: 16px; outline: none; }
+        input:focus, select:focus { border-color: #a855f7; }
+        button { width: 100%; padding: 16px; background: #a855f7; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #9333ea; }
+        .result { margin-top: 20px; padding: 20px; background: #000; border: 2px dashed #00ffc8; border-radius: 12px; text-align: center; display: none; }
         .result.show { display: block; }
-        .key {
-            font-size: 26px;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: 4px;
-            font-family: 'Consolas', monospace;
-        }
-        .btn-copy {
-            margin-top: 12px;
-            background: #00ffc8;
-            color: #000;
-            font-size: 14px;
-            padding: 12px;
-        }
-        .btn-copy:hover {
-            background: #00e6b0;
-        }
-        .error {
-            color: #ff6b6b;
-            font-size: 13px;
-            text-align: center;
-            margin-bottom: 16px;
-            display: none;
-        }
-        .error.show { display: block; }
-        .debug {
-            margin-top: 16px;
-            padding: 14px;
-            background: #000;
-            border-radius: 10px;
-            font-family: 'Consolas', monospace;
-            font-size: 11px;
-            color: #0f0;
-            display: none;
-            text-align: left;
-            word-break: break-all;
-        }
+        .key { font-size: 24px; color: #fff; letter-spacing: 4px; font-family: 'Consolas', monospace; margin-bottom: 12px; }
+        .copy-btn { background: #00ffc8; color: #000; font-size: 14px; padding: 10px; }
+        .debug { margin-top: 16px; padding: 14px; background: #000; color: #0f0; font-family: 'Consolas', monospace; font-size: 11px; border-radius: 8px; display: none; }
         .debug.show { display: block; }
+        .error { color: #ff4444; text-align: center; margin-bottom: 12px; display: none; }
+        .error.show { display: block; }
     </style>
 </head>
 <body>
     <div class="card">
         <h1>🔮 XBody License Generator</h1>
-        <p class="subtitle">Secure Activation System</p>
         
         <div class="error" id="error"></div>
         
         <label>SERIAL NUMBER</label>
-        <input type="text" id="serial" placeholder="XXXX-XXXX-XXXX" maxlength="14" oninput="formatSerial(this)">
+        <input type="text" id="serial" placeholder="XXXX-XXXX-XXXX" maxlength="14" oninput="this.value = this.value.toUpperCase().replace(/[^A-F0-9]/g,'').replace(/(.{4})(.{4})(.{4})/,'$1-$2-$3')">
         
         <label>VERSION</label>
         <select id="version">
@@ -155,27 +40,19 @@
             <option value="3">Version 3</option>
         </select>
         
-        <button onclick="generate()">⚡ Generate Activation Key</button>
+        <button onclick="generate()">⚡ Generate</button>
         
         <div class="result" id="result">
-            <p style="color:#00ffc8;font-size:11px;letter-spacing:2px;margin-bottom:8px;">ACTIVATION KEY</p>
+            <p style="color:#00ffc8;font-size:11px;margin-bottom:8px;">ACTIVATION KEY</p>
             <div class="key" id="keyDisplay"></div>
-            <button class="btn-copy" onclick="copyKey()">📋 Copy to Clipboard</button>
+            <button class="copy-btn" onclick="copyKey()">📋 Copy</button>
         </div>
         
         <div class="debug" id="debug"></div>
     </div>
 
     <script>
-        const SECRET_KEY = "XBody2024SuperSecretKey123456";
-        
-        function formatSerial(input) {
-            let val = input.value.toUpperCase().replace(/[^A-F0-9]/g, '');
-            if (val.length > 12) val = val.substring(0, 12);
-            if (val.length > 8) val = val.substring(0,4) + '-' + val.substring(4,8) + '-' + val.substring(8);
-            else if (val.length > 4) val = val.substring(0,4) + '-' + val.substring(4);
-            input.value = val;
-        }
+        const SECRET = "XBody2024SuperSecretKey123456";
         
         function generate() {
             const serialRaw = document.getElementById('serial').value.replace(/-/g, '').toUpperCase();
@@ -186,42 +63,35 @@
             document.getElementById('debug').classList.remove('show');
             
             if (serialRaw.length !== 12 || !/^[A-F0-9]{12}$/.test(serialRaw)) {
-                document.getElementById('error').textContent = '❌ Invalid Serial Number';
+                document.getElementById('error').textContent = '❌ Invalid Serial';
                 document.getElementById('error').classList.add('show');
                 return;
             }
             
-            // فرمول دقیقاً مثل C++
-            const inputData = serialRaw + SECRET_KEY + version;
+            // استفاده از Latin1 مثل C++
+            const inputData = serialRaw + SECRET + version;
             const hash = CryptoJS.SHA256(inputData).toString().toUpperCase();
             const core = hash.substring(0, 12);
-            const key = core.substring(0,4) + '-' + core.substring(4,8) + '-' + core.substring(8,12) + '-' + version.padStart(2, '0');
+            const key = core.substring(0,4) + '-' + core.substring(4,8) + '-' + core.substring(8,12) + '-' + version.padStart(2,'0');
             
             document.getElementById('keyDisplay').textContent = key;
             document.getElementById('result').classList.add('show');
             
-            // Debug
             document.getElementById('debug').innerHTML = 
-                '<strong>DEBUG:</strong>\n' +
-                'Serial:  ' + serialRaw + '\n' +
-                'Secret:  ' + SECRET_KEY + '\n' +
+                'Serial: ' + serialRaw + '\n' +
+                'Secret: ' + SECRET + '\n' +
                 'Version: ' + version + '\n' +
-                'Input:   ' + inputData + '\n' +
-                'SHA256:  ' + hash + '\n' +
-                'Core:    ' + core + '\n' +
-                'Key:     ' + key;
+                'Input: ' + inputData + '\n' +
+                'SHA256: ' + hash + '\n' +
+                'Core: ' + core + '\n' +
+                'Key: ' + key;
             document.getElementById('debug').classList.add('show');
         }
         
         function copyKey() {
-            const key = document.getElementById('keyDisplay').textContent;
-            navigator.clipboard.writeText(key);
+            navigator.clipboard.writeText(document.getElementById('keyDisplay').textContent);
             alert('✅ Copied!');
         }
-        
-        document.getElementById('serial').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') generate();
-        });
     </script>
 </body>
 </html>
