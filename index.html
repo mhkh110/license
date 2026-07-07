@@ -5,23 +5,248 @@
     <title>XBody License Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
+        :root {
+            --bg: #060816;
+            --panel: rgba(10, 16, 30, 0.82);
+            --accent: #a855f7;
+            --accent-2: #00ffc8;
+            --text: #f5f7ff;
+            --muted: #8b93b7;
+            --danger: #ff5f7a;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #0a0a1a; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .card { background: #0d1117; border: 1px solid #6c5ce7; border-radius: 20px; padding: 40px; width: 100%; max-width: 500px; }
-        h1 { color: #a855f7; text-align: center; margin-bottom: 30px; }
-        label { color: #888; font-size: 12px; font-weight: bold; letter-spacing: 2px; display: block; margin-bottom: 8px; }
-        input, select { width: 100%; padding: 14px; background: #1a1a2e; border: 2px solid #333; border-radius: 12px; color: #fff; font-size: 18px; font-family: 'Consolas', monospace; letter-spacing: 3px; margin-bottom: 16px; outline: none; }
-        input:focus, select:focus { border-color: #a855f7; }
-        button { width: 100%; padding: 16px; background: #a855f7; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        button:hover { background: #9333ea; }
-        .result { margin-top: 20px; padding: 20px; background: #000; border: 2px dashed #00ffc8; border-radius: 12px; text-align: center; display: none; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background:
+                radial-gradient(circle at top left, rgba(168, 85, 247, 0.34), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(0, 255, 200, 0.18), transparent 30%),
+                linear-gradient(135deg, #03050e 0%, #0a1022 45%, #050710 100%);
+            color: var(--text);
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before,
+        body::after {
+            content: '';
+            position: absolute;
+            inset: -20%;
+            background:
+                radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1.2px),
+                radial-gradient(circle, rgba(168, 85, 247, 0.22) 0 16%, transparent 17%);
+            background-size: 140px 140px, 360px 360px;
+            animation: drift 24s linear infinite;
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+        body::after {
+            animation-duration: 36s;
+            opacity: 0.35;
+        }
+
+        @keyframes drift {
+            from { transform: translate3d(0, 0, 0) rotate(0deg); }
+            to { transform: translate3d(-4%, 4%, 0) rotate(12deg); }
+        }
+
+        .card {
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(145deg, rgba(13, 17, 23, 0.96), rgba(7, 11, 20, 0.9));
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            border-radius: 24px;
+            padding: 38px 32px;
+            width: min(100%, 520px);
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.03) inset,
+                0 20px 60px rgba(0, 0, 0, 0.45),
+                0 0 60px rgba(168, 85, 247, 0.12);
+            backdrop-filter: blur(16px);
+            transform: translateY(0);
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.04) inset,
+                0 24px 70px rgba(0, 0, 0, 0.5),
+                0 0 80px rgba(168, 85, 247, 0.16);
+            border-color: rgba(168, 85, 247, 0.55);
+        }
+
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 28px;
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            letter-spacing: 1px;
+            text-shadow: 0 0 20px rgba(168, 85, 247, 0.45);
+        }
+
+        label {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            display: block;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 14px;
+            color: #fff;
+            font-size: 16px;
+            font-family: 'Consolas', monospace;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            outline: none;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease, background 0.25s ease;
+        }
+
+        input::placeholder { color: #6f7392; }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.22), 0 0 20px rgba(168, 85, 247, 0.16);
+            transform: translateY(-1px);
+            background: rgba(255,255,255,0.06);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px 16px;
+            background: linear-gradient(90deg, var(--accent) 0%, #7c3aed 50%, #4f46e5 100%);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            letter-spacing: 0.8px;
+            box-shadow: 0 10px 28px rgba(124, 58, 237, 0.22);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 36px rgba(124, 58, 237, 0.28);
+            filter: saturate(1.2);
+        }
+
+        button:hover::before {
+            transform: translateX(100%);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 22px 20px;
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px dashed rgba(0, 255, 200, 0.7);
+            border-radius: 16px;
+            text-align: center;
+            display: none;
+            box-shadow: 0 0 0 1px rgba(0,255,200,0.06) inset, 0 12px 30px rgba(0, 0, 0, 0.25);
+            animation: popIn 0.3s ease;
+        }
+
         .result.show { display: block; }
-        .key { font-size: 24px; color: #fff; letter-spacing: 4px; font-family: 'Consolas', monospace; margin-bottom: 12px; }
-        .copy-btn { background: #00ffc8; color: #000; font-size: 14px; padding: 10px; }
-        .debug { margin-top: 16px; padding: 14px; background: #000; color: #0f0; font-family: 'Consolas', monospace; font-size: 11px; border-radius: 8px; display: none; }
-        .debug.show { display: block; }
-        .error { color: #ff4444; text-align: center; margin-bottom: 12px; display: none; }
-        .error.show { display: block; }
+
+        .key {
+            font-size: 24px;
+            color: #fff;
+            letter-spacing: 4px;
+            font-family: 'Consolas', monospace;
+            margin-bottom: 12px;
+            text-shadow: 0 0 12px rgba(0, 255, 200, 0.35);
+        }
+
+        .copy-btn {
+            background: linear-gradient(90deg, #00ffc8, #00d3a4);
+            color: #02150f;
+            font-size: 14px;
+            padding: 10px 12px;
+            box-shadow: 0 10px 18px rgba(0, 255, 200, 0.25);
+        }
+
+        .copy-btn:hover {
+            filter: brightness(1.05);
+        }
+
+        .debug {
+            margin-top: 16px;
+            padding: 14px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #8dffbf;
+            font-family: 'Consolas', monospace;
+            font-size: 11px;
+            border-radius: 10px;
+            display: none;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow: auto;
+            border: 1px solid rgba(0,255,200,0.2);
+        }
+
+        .debug.show { display: block; animation: fadeIn 0.25s ease; }
+
+        .error {
+            color: var(--danger);
+            text-align: center;
+            margin-bottom: 12px;
+            display: none;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+        }
+
+        .error.show { display: block; animation: shake 0.3s ease; }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        @media (max-width: 560px) {
+            .card { padding: 28px 20px; }
+            input, select { font-size: 15px; }
+            .key { font-size: 20px; letter-spacing: 2px; }
+        }
     </style>
 </head>
 <body>
