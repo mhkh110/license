@@ -6,97 +6,239 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
         :root {
-            --bg: #060816;
-            --panel: rgba(10, 16, 30, 0.82);
-            --accent: #a855f7;
-            --accent-2: #00ffc8;
-            --text: #f5f7ff;
-            --muted: #8b93b7;
+            --bg-1: #02030a;
+            --bg-2: #050a1f;
+            --bg-3: #0a1535;
+            --accent-1: #3b82f6;
+            --accent-2: #06b6d4;
+            --accent-3: #8b5cf6;
+            --glow: #00d4ff;
+            --text: #e6f0ff;
+            --muted: #7a8bb8;
             --danger: #ff5f7a;
+            --success: #00ffc8;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 24px;
             background:
-                radial-gradient(circle at top left, rgba(168, 85, 247, 0.34), transparent 28%),
-                radial-gradient(circle at bottom right, rgba(0, 255, 200, 0.18), transparent 30%),
-                linear-gradient(135deg, #03050e 0%, #0a1022 45%, #050710 100%);
+                radial-gradient(ellipse at 20% 10%, rgba(59, 130, 246, 0.25), transparent 45%),
+                radial-gradient(ellipse at 80% 90%, rgba(6, 182, 212, 0.20), transparent 45%),
+                radial-gradient(ellipse at 50% 50%, rgba(139, 92, 246, 0.12), transparent 60%),
+                linear-gradient(135deg, #02030a 0%, #050a1f 40%, #0a1535 70%, #02030a 100%);
             color: var(--text);
-            overflow: hidden;
             position: relative;
         }
 
-        body::before,
-        body::after {
+        /* ستاره‌های کهکشانی */
+        .stars, .stars2, .stars3 {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .stars {
+            background-image:
+                radial-gradient(1px 1px at 20px 30px, #ffffff, transparent),
+                radial-gradient(1px 1px at 40px 70px, #a5d8ff, transparent),
+                radial-gradient(1px 1px at 90px 40px, #ffffff, transparent),
+                radial-gradient(1px 1px at 130px 80px, #7dd3fc, transparent),
+                radial-gradient(1px 1px at 160px 120px, #ffffff, transparent),
+                radial-gradient(2px 2px at 200px 60px, #bae6fd, transparent);
+            background-size: 250px 200px;
+            background-repeat: repeat;
+            animation: twinkle 4s ease-in-out infinite alternate;
+            opacity: 0.7;
+        }
+
+        .stars2 {
+            background-image:
+                radial-gradient(1px 1px at 50px 100px, #ffffff, transparent),
+                radial-gradient(1px 1px at 150px 50px, #93c5fd, transparent),
+                radial-gradient(2px 2px at 250px 150px, #ffffff, transparent),
+                radial-gradient(1px 1px at 300px 80px, #67e8f9, transparent);
+            background-size: 350px 250px;
+            background-repeat: repeat;
+            animation: twinkle 6s ease-in-out infinite alternate-reverse;
+            opacity: 0.5;
+        }
+
+        .stars3 {
+            background-image:
+                radial-gradient(1px 1px at 80px 40px, #ffffff, transparent),
+                radial-gradient(1px 1px at 180px 160px, #c7d2fe, transparent),
+                radial-gradient(2px 2px at 280px 90px, #ffffff, transparent);
+            background-size: 400px 300px;
+            background-repeat: repeat;
+            animation: twinkle 8s ease-in-out infinite alternate;
+            opacity: 0.4;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; transform: translateY(0); }
+            100% { opacity: 0.8; transform: translateY(-10px); }
+        }
+
+        /* کهکشان چرخان */
+        .galaxy {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 900px;
+            height: 900px;
+            margin: -450px 0 0 -450px;
+            background:
+                conic-gradient(from 0deg,
+                    transparent 0deg,
+                    rgba(59, 130, 246, 0.08) 60deg,
+                    transparent 120deg,
+                    rgba(6, 182, 212, 0.06) 180deg,
+                    transparent 240deg,
+                    rgba(139, 92, 246, 0.08) 300deg,
+                    transparent 360deg);
+            border-radius: 50%;
+            filter: blur(40px);
+            animation: rotate 60s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* سیاره / orb */
+        .orb {
+            position: fixed;
+            top: 15%;
+            right: 10%;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #60a5fa, #1e3a8a 60%, #0a1535 100%);
+            box-shadow:
+                0 0 60px rgba(59, 130, 246, 0.5),
+                0 0 120px rgba(6, 182, 212, 0.3),
+                inset -20px -20px 40px rgba(0, 0, 0, 0.5);
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.85;
+        }
+
+        .orb::after {
             content: '';
             position: absolute;
-            inset: -20%;
-            background:
-                radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1.2px),
-                radial-gradient(circle, rgba(168, 85, 247, 0.22) 0 16%, transparent 17%);
-            background-size: 140px 140px, 360px 360px;
-            animation: drift 24s linear infinite;
-            opacity: 0.55;
-            pointer-events: none;
+            inset: -10px;
+            border-radius: 50%;
+            border: 2px solid rgba(103, 232, 249, 0.3);
+            animation: pulse 3s ease-in-out infinite;
         }
 
-        body::after {
-            animation-duration: 36s;
-            opacity: 0.35;
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
         }
 
-        @keyframes drift {
-            from { transform: translate3d(0, 0, 0) rotate(0deg); }
-            to { transform: translate3d(-4%, 4%, 0) rotate(12deg); }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 0.2; }
         }
 
+        /* کارت اصلی */
         .card {
             position: relative;
-            z-index: 1;
-            background: linear-gradient(145deg, rgba(13, 17, 23, 0.96), rgba(7, 11, 20, 0.9));
-            border: 1px solid rgba(168, 85, 247, 0.35);
+            z-index: 10;
+            background: linear-gradient(145deg, rgba(10, 18, 40, 0.92), rgba(5, 10, 25, 0.96));
+            border: 1px solid rgba(59, 130, 246, 0.35);
             border-radius: 24px;
-            padding: 38px 32px;
+            padding: 42px 36px;
             width: min(100%, 520px);
             box-shadow:
-                0 0 0 1px rgba(255,255,255,0.03) inset,
-                0 20px 60px rgba(0, 0, 0, 0.45),
-                0 0 60px rgba(168, 85, 247, 0.12);
-            backdrop-filter: blur(16px);
+                0 0 0 1px rgba(255,255,255,0.04) inset,
+                0 0 60px rgba(59, 130, 246, 0.15),
+                0 0 120px rgba(6, 182, 212, 0.08),
+                0 30px 80px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
             transform: translateY(0);
-            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 24px;
+            padding: 1px;
+            background: linear-gradient(135deg,
+                rgba(59, 130, 246, 0.6),
+                rgba(6, 182, 212, 0.3),
+                rgba(139, 92, 246, 0.4),
+                rgba(59, 130, 246, 0.6));
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.7;
+            animation: borderGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         .card:hover {
             transform: translateY(-4px);
             box-shadow:
-                0 0 0 1px rgba(255,255,255,0.04) inset,
-                0 24px 70px rgba(0, 0, 0, 0.5),
-                0 0 80px rgba(168, 85, 247, 0.16);
-            border-color: rgba(168, 85, 247, 0.55);
+                0 0 0 1px rgba(255,255,255,0.05) inset,
+                0 0 80px rgba(59, 130, 246, 0.22),
+                0 0 140px rgba(6, 182, 212, 0.12),
+                0 36px 90px rgba(0, 0, 0, 0.65);
+            border-color: rgba(59, 130, 246, 0.55);
         }
 
         h1 {
             color: #ffffff;
             text-align: center;
-            margin-bottom: 28px;
-            font-size: clamp(1.6rem, 3vw, 2.2rem);
-            letter-spacing: 1px;
-            text-shadow: 0 0 20px rgba(168, 85, 247, 0.45);
+            margin-bottom: 30px;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            letter-spacing: 1.5px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #60a5fa, #06b6d4, #8b5cf6, #60a5fa);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s linear infinite;
+            filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));
+        }
+
+        @keyframes shimmer {
+            to { background-position: 200% center; }
         }
 
         label {
             color: var(--muted);
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 2px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
             display: block;
             margin-bottom: 8px;
             text-transform: uppercase;
@@ -105,129 +247,186 @@
         input, select {
             width: 100%;
             padding: 14px 16px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(10, 20, 45, 0.7);
+            border: 1px solid rgba(59, 130, 246, 0.25);
             border-radius: 14px;
             color: #fff;
             font-size: 16px;
-            font-family: 'Consolas', monospace;
+            font-family: 'Consolas', 'Courier New', monospace;
             letter-spacing: 2px;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
             outline: none;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
-            transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease, background 0.25s ease;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+            transition: all 0.3s ease;
         }
 
-        input::placeholder { color: #6f7392; }
+        input::placeholder { color: #4a5680; }
 
         input:focus, select:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.22), 0 0 20px rgba(168, 85, 247, 0.16);
+            border-color: var(--accent-1);
+            box-shadow:
+                0 0 0 3px rgba(59, 130, 246, 0.18),
+                0 0 25px rgba(59, 130, 246, 0.25),
+                inset 0 1px 0 rgba(255,255,255,0.06);
             transform: translateY(-1px);
-            background: rgba(255,255,255,0.06);
+            background: rgba(15, 28, 58, 0.8);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image:
+                linear-gradient(45deg, transparent 50%, #60a5fa 50%),
+                linear-gradient(135deg, #60a5fa 50%, transparent 50%);
+            background-position:
+                calc(100% - 20px) calc(50% - 2px),
+                calc(100% - 15px) calc(50% - 2px);
+            background-size: 5px 5px, 5px 5px;
+            background-repeat: no-repeat;
+        }
+
+        select option {
+            background: #0a1535;
+            color: #fff;
         }
 
         button {
             width: 100%;
             padding: 15px 16px;
-            background: linear-gradient(90deg, var(--accent) 0%, #7c3aed 50%, #4f46e5 100%);
+            background: linear-gradient(90deg, #1e40af 0%, #3b82f6 50%, #06b6d4 100%);
             color: #fff;
             border: none;
             border-radius: 14px;
             font-size: 15px;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            letter-spacing: 0.8px;
-            box-shadow: 0 10px 28px rgba(124, 58, 237, 0.22);
+            letter-spacing: 1px;
+            box-shadow:
+                0 10px 30px rgba(59, 130, 246, 0.35),
+                0 0 40px rgba(6, 182, 212, 0.15);
             position: relative;
             overflow: hidden;
-            transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+            transition: all 0.3s ease;
         }
 
         button::before {
             content: '';
             position: absolute;
-            inset: -1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            inset: -2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             transform: translateX(-100%);
-            transition: transform 0.5s ease;
+            transition: transform 0.6s ease;
         }
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 16px 36px rgba(124, 58, 237, 0.28);
-            filter: saturate(1.2);
+            box-shadow:
+                0 16px 40px rgba(59, 130, 246, 0.45),
+                0 0 60px rgba(6, 182, 212, 0.25);
+            filter: brightness(1.1);
         }
 
         button:hover::before {
             transform: translateX(100%);
         }
 
+        button:active {
+            transform: translateY(0);
+        }
+
         .result {
-            margin-top: 20px;
+            margin-top: 22px;
             padding: 22px 20px;
-            background: rgba(0, 0, 0, 0.65);
-            border: 1px dashed rgba(0, 255, 200, 0.7);
+            background: linear-gradient(145deg, rgba(0, 20, 40, 0.85), rgba(0, 10, 30, 0.9));
+            border: 1px dashed rgba(0, 212, 255, 0.6);
             border-radius: 16px;
             text-align: center;
             display: none;
-            box-shadow: 0 0 0 1px rgba(0,255,200,0.06) inset, 0 12px 30px rgba(0, 0, 0, 0.25);
-            animation: popIn 0.3s ease;
+            box-shadow:
+                0 0 0 1px rgba(0, 212, 255, 0.08) inset,
+                0 0 30px rgba(0, 212, 255, 0.15),
+                0 12px 30px rgba(0, 0, 0, 0.3);
+            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .result.show { display: block; }
 
+        .result-label {
+            color: #00d4ff;
+            font-size: 11px;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
         .key {
-            font-size: 24px;
-            color: #fff;
-            letter-spacing: 4px;
-            font-family: 'Consolas', monospace;
-            margin-bottom: 12px;
-            text-shadow: 0 0 12px rgba(0, 255, 200, 0.35);
+            font-size: 26px;
+            color: #ffffff;
+            letter-spacing: 5px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            margin-bottom: 14px;
+            font-weight: 700;
+            text-shadow:
+                0 0 15px rgba(0, 212, 255, 0.8),
+                0 0 30px rgba(59, 130, 246, 0.5);
+            animation: glowPulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glowPulse {
+            from { text-shadow: 0 0 15px rgba(0, 212, 255, 0.6), 0 0 30px rgba(59, 130, 246, 0.4); }
+            to { text-shadow: 0 0 25px rgba(0, 212, 255, 0.9), 0 0 50px rgba(59, 130, 246, 0.6); }
         }
 
         .copy-btn {
-            background: linear-gradient(90deg, #00ffc8, #00d3a4);
-            color: #02150f;
+            background: linear-gradient(90deg, #06b6d4, #3b82f6);
+            color: #ffffff;
             font-size: 14px;
-            padding: 10px 12px;
-            box-shadow: 0 10px 18px rgba(0, 255, 200, 0.25);
+            padding: 11px 12px;
+            box-shadow: 0 10px 20px rgba(6, 182, 212, 0.35);
+            letter-spacing: 1px;
         }
 
         .copy-btn:hover {
-            filter: brightness(1.05);
+            filter: brightness(1.15);
+            box-shadow: 0 14px 28px rgba(6, 182, 212, 0.5);
         }
 
         .debug {
-            margin-top: 16px;
+            margin-top: 18px;
             padding: 14px;
-            background: rgba(0, 0, 0, 0.75);
-            color: #8dffbf;
+            background: rgba(0, 5, 15, 0.85);
+            color: #67e8f9;
             font-family: 'Consolas', monospace;
             font-size: 11px;
-            border-radius: 10px;
+            border-radius: 12px;
             display: none;
-            line-height: 1.6;
+            line-height: 1.7;
             white-space: pre-wrap;
             overflow: auto;
-            border: 1px solid rgba(0,255,200,0.2);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            box-shadow: inset 0 0 20px rgba(0, 212, 255, 0.05);
         }
 
-        .debug.show { display: block; animation: fadeIn 0.25s ease; }
+        .debug.show { display: block; animation: fadeIn 0.3s ease; }
 
         .error {
             color: var(--danger);
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             display: none;
-            font-weight: 600;
-            letter-spacing: 0.4px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 10px;
+            background: rgba(255, 95, 122, 0.1);
+            border: 1px solid rgba(255, 95, 122, 0.3);
+            border-radius: 10px;
         }
 
-        .error.show { display: block; animation: shake 0.3s ease; }
+        .error.show { display: block; animation: shake 0.4s ease; }
 
         @keyframes popIn {
-            from { opacity: 0; transform: translateY(10px) scale(0.97); }
+            from { opacity: 0; transform: translateY(12px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
@@ -238,84 +437,103 @@
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            75% { transform: translateX(4px); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
         }
 
         @media (max-width: 560px) {
-            .card { padding: 28px 20px; }
+            .card { padding: 30px 22px; }
             input, select { font-size: 15px; }
-            .key { font-size: 20px; letter-spacing: 2px; }
+            .key { font-size: 20px; letter-spacing: 3px; }
+            .orb { width: 80px; height: 80px; top: 8%; right: 5%; }
         }
     </style>
 </head>
 <body>
+    <!-- کهکشان و ستاره‌ها -->
+    <div class="galaxy"></div>
+    <div class="stars"></div>
+    <div class="stars2"></div>
+    <div class="stars3"></div>
+    <div class="orb"></div>
+
     <div class="card">
         <h1>🔮 XBody License Generator</h1>
-        
+
         <div class="error" id="error"></div>
-        
+
         <label>SERIAL NUMBER</label>
-        <input type="text" id="serial" placeholder="XXXX-XXXX-XXXX" maxlength="14" oninput="this.value = this.value.toUpperCase().replace(/[^A-F0-9]/g,'').replace(/(.{4})(.{4})(.{4})/,'$1-$2-$3')">
-        
+        <input type="text" id="serial"
+               placeholder="XXXX-XXXX-XXXX"
+               maxlength="14"
+               oninput="this.value = this.value.toUpperCase().replace(/[^A-F0-9]/g,'').replace(/(.{4})(.{4})(.{4})/,'$1-$2-$3')">
+
         <label>VERSION</label>
         <select id="version">
             <option value="1">Version 1</option>
             <option value="2">Version 2</option>
             <option value="3">Version 3</option>
         </select>
-        
-        <button onclick="generate()">⚡ Generate</button>
-        
+
+        <button onclick="generate()">⚡ Generate Activation Key</button>
+
         <div class="result" id="result">
-            <p style="color:#00ffc8;font-size:11px;margin-bottom:8px;">ACTIVATION KEY</p>
+            <p class="result-label">ACTIVATION KEY</p>
             <div class="key" id="keyDisplay"></div>
-            <button class="copy-btn" onclick="copyKey()">📋 Copy</button>
+            <button class="copy-btn" onclick="copyKey()">📋 Copy to Clipboard</button>
         </div>
-        
+
         <div class="debug" id="debug"></div>
     </div>
 
     <script>
         const SECRET = "XBody2024SuperSecretKey123456";
-        
+
         function generate() {
             const serialRaw = document.getElementById('serial').value.replace(/-/g, '').toUpperCase();
             const version = document.getElementById('version').value;
-            
+
             document.getElementById('error').classList.remove('show');
             document.getElementById('result').classList.remove('show');
             document.getElementById('debug').classList.remove('show');
-            
+
             if (serialRaw.length !== 12 || !/^[A-F0-9]{12}$/.test(serialRaw)) {
-                document.getElementById('error').textContent = '❌ Invalid Serial';
+                document.getElementById('error').textContent = '❌ Invalid Serial Number';
                 document.getElementById('error').classList.add('show');
                 return;
             }
-            
-            // استفاده از Latin1 مثل C++
+
+            // ساخت داده ورودی دقیقاً مثل C++
+            // serial(12) + secret(29) + version(1)
             const inputData = serialRaw + SECRET + version;
-            const hash = CryptoJS.SHA256(inputData).toString().toUpperCase();
+
+            // استفاده از UTF-8 صریح برای اطمینان از تطابق با toLatin1() در Qt
+            const hash = CryptoJS.SHA256(CryptoJS.enc.Utf8.parse(inputData)).toString().toUpperCase();
             const core = hash.substring(0, 12);
             const key = core.substring(0,4) + '-' + core.substring(4,8) + '-' + core.substring(8,12) + '-' + version.padStart(2,'0');
-            
+
             document.getElementById('keyDisplay').textContent = key;
             document.getElementById('result').classList.add('show');
-            
-            document.getElementById('debug').innerHTML = 
-                'Serial: ' + serialRaw + '\n' +
-                'Secret: ' + SECRET + '\n' +
-                'Version: ' + version + '\n' +
-                'Input: ' + inputData + '\n' +
-                'SHA256: ' + hash + '\n' +
-                'Core: ' + core + '\n' +
-                'Key: ' + key;
+
+            document.getElementById('debug').innerHTML =
+                '🔹 Serial:   ' + serialRaw + '\n' +
+                '🔹 Secret:   ' + SECRET + '\n' +
+                '🔹 Version:  ' + version + '\n' +
+                '🔹 Input:    ' + inputData + '\n' +
+                '🔹 SHA256:   ' + hash + '\n' +
+                '🔹 Core:     ' + core + '\n' +
+                '🔹 Final:    ' + key;
             document.getElementById('debug').classList.add('show');
         }
-        
+
         function copyKey() {
-            navigator.clipboard.writeText(document.getElementById('keyDisplay').textContent);
-            alert('✅ Copied!');
+            const keyText = document.getElementById('keyDisplay').textContent;
+            navigator.clipboard.writeText(keyText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const original = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => { btn.textContent = original; }, 1500);
+            });
         }
     </script>
 </body>
